@@ -5,7 +5,7 @@
  */
 
 import './bootstrap';
-import { createApp } from 'vue';
+import { createApp, defineComponent } from 'vue';
 import Tasks from './App.vue';
 import TaskDetail from './components/TaskDetail.vue';
 import TaskList from './components/TaskList.vue';

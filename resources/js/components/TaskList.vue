@@ -1,10 +1,11 @@
 <template>
     <em  v-if="!tasks">Úkoly sa načítavajú</em>
     <em  v-else-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
-    <ol>
-        <li v-for="task in tasks" :key="task.id">{{ task.name }}</li>
+    <ol v-else>
+        <li v-for="task in tasks" :key="task.id">{{ task.name + (task.unsaved == true ? " *" : "") }}</li>
     </ol>
-    <button v-on:click=add :disabled="newtask.length == 0">Add</button><input type="text" v-model="newtask">
+    <button v-on:click="createTask">Add</button>
+    <task-detail v-if="selected" v-model="selected"/>
 </template>
 <script>
 export default {
@@ -14,19 +15,31 @@ export default {
     },
     data: function() {
         return {
-            tasks: [],
-            newtask: ''
+            tasks: null,
+            selected: false,
+            newtask: null
         }
     },
     computed: {
         nameWithStatus: function() {
-
+        }
+    },
+    methods: {
+        createTask: function() {
+            this.selected = {
+                name: '',
+                description: '',
+                due: '',
+                complete: false,
+                unsaved: true
+            };
+            this.tasks.push(this.selected);
         }
     },
     created: function() {
         axios.get('/task')
             .then(response => {
-                this.tasks = response.data.data;
+                this.tasks = response.data.tasks;
             })
             .catch(error => {
                 console.log("Error", error)
