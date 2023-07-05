@@ -5,17 +5,13 @@
  */
 
 import './bootstrap';
-import { createApp, defineComponent } from 'vue';
-import Tasks from './App.vue';
+import { createApp } from 'vue';
+import TaskList from './App.vue';
 import TaskDetail from './components/TaskDetail.vue';
-import TaskList from './components/TaskList.vue';
 
-const VueApp = createApp(Tasks);
+const VueApp = createApp(TaskList);
 
-//import ExampleComponent from './components/ExampleComponent.vue';
-//VueApp.component('example-component', ExampleComponent);
 VueApp.component('task-detail', TaskDetail);
-VueApp.component('task-list', TaskList);
 
 /**
  * The following block of code may be used to automatically register your

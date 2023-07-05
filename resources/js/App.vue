@@ -1,8 +1,59 @@
-<template>
 
-  <h1>Moje úkoly</h1>
-  <task-list/>
-  <div id="detail"></div>
+<template>
+    <h1>Moje úkoly</h1>
+    <em v-if="!tasks">Úkoly sa načítavajú</em>
+    <em v-else-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
+    <ol v-else>
+        <li v-for="task in tasks" :key="task.id" v-on:click="selectTask(task)">{{ task.name + (task.unsaved == true ? " *" : "") }}</li>
+    </ol>
+    <button v-on:click="createTask">Add</button>
+    <task-detail v-if="selectedTask"/>
 </template>
+
 <script>
+import { provide, ref } from 'vue';
+export default {
+    setup: function() {
+        const selectedTask = ref({});
+        var updateTask = function(txt) {
+            selectedTask.value = txt;
+        };
+
+        provide('selectedTask', selectedTask);
+        provide('updateTask', updateTask);
+
+        const selectTask = function (t) {
+            //Console.log(t);
+        };
+        return { selectedTask };
+    },
+    data: function() {
+        return {
+            tasks: null
+        }
+    },
+    methods: {
+        createTask: function() {
+            this.selectedTask = {
+                name: '',
+                description: '',
+                due: '',
+                complete: false,
+                unsaved: true
+            };
+            this.tasks.push(this.selectedTask);
+        }
+    },
+    created: function() {
+        axios.get('/task')
+            .then(response => {
+                this.tasks = response.data.tasks;
+            })
+            .catch(error => {
+                console.log("Error", error)
+            })
+    }
+}
 </script>
+
+
