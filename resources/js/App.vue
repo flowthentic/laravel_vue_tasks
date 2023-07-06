@@ -6,7 +6,7 @@
     <ol v-else>
         <li v-for="task in tasks" :key="task.id" v-on:click="selectTask(task)">{{ task.name + (task.unsaved == true ? " *" : "") }}</li>
     </ol>
-    <button v-on:click="createTask">Add</button>
+    <button v-if="tasks" v-on:click="createTask">Nový úkol</button>
     <task-detail v-if="selectedTask"/>
 </template>
 
@@ -15,12 +15,7 @@ import { provide, ref } from 'vue';
 export default {
     setup: function() {
         const selectedTask = ref(false);
-        var updateTask = function(txt) {
-            selectedTask.value = txt;
-        };
-
         provide('selectedTask', selectedTask);
-        provide('updateTask', updateTask);
 
         const selectTask = function (t) {
             //Console.log(t);
@@ -34,15 +29,15 @@ export default {
     },
     methods: {
         createTask: function() {
-            this.selectedTask = {
+            this.tasks.push({
                 id: null,
                 name: '',
                 description: '',
                 due: '',
                 completed: false,
                 unsaved: true
-            };
-            this.tasks.push(this.selectedTask);
+            });
+            this.selectedTask = this.tasks.at(-1);
         }
     },
     created: function() {
