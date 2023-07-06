@@ -35,7 +35,8 @@ class TaskController extends Controller
             'name' => 'required',
         ]);
 
-        $task = Task::create($request);
+        $task = Task::create($request->all());
+        $task['unsaved'] = false;
 
         return response()->json([
            'task'    => $task,

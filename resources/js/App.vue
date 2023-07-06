@@ -14,7 +14,7 @@
 import { provide, ref } from 'vue';
 export default {
     setup: function() {
-        const selectedTask = ref({});
+        const selectedTask = ref(false);
         var updateTask = function(txt) {
             selectedTask.value = txt;
         };
@@ -35,10 +35,11 @@ export default {
     methods: {
         createTask: function() {
             this.selectedTask = {
+                id: null,
                 name: '',
                 description: '',
                 due: '',
-                complete: false,
+                completed: false,
                 unsaved: true
             };
             this.tasks.push(this.selectedTask);
