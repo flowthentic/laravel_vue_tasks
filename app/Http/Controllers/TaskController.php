@@ -74,6 +74,9 @@ class TaskController extends Controller
         $task->due = request('due');
         $task->completed = request('completed');
 
+        $task->save();
+        $task['unsaved'] = false;
+
         return response()->json([
            'task'    => $task,
            'message' => 'Successfully updated'

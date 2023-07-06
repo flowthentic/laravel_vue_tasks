@@ -38,6 +38,9 @@ export default {
                 unsaved: true
             });
             this.selectedTask = this.tasks.at(-1);
+        },
+        selectTask: function(task) {
+            this.selectedTask = task;
         }
     },
     created: function() {
