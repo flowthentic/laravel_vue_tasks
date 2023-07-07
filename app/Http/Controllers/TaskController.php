@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class TaskController extends Controller
 {
@@ -31,9 +33,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-        ]);
+        $this->validateWrapper($request);
 
         $task = Task::create($request->all());
         $task['unsaved'] = false;
@@ -65,9 +65,7 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        $this->validate($request, [
-            'name' => 'required',
-        ]);
+        $this->validateWrapper($request);
 
         $task->name = request('name');
         $task->description = request('description');
@@ -89,5 +87,28 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         //
+    }
+
+    private function validateWrapper(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // validation of required fields
+            'name' => 'required',
+            'due' => 'required',
+        ])->after(function ($validator) {
+            // then validate if there aren't already two due dates of this value
+            $data = $validator->getData();
+            $matchingDueCount = Task::where('due', $data['due'])
+                ->where('id', '<>', $data['id']) // ignore involved task
+                ->count();
+            if ($matchingDueCount > 1) {
+                $validator->errors()
+                ->add('due', 'Už existuje viacero úloh s týmto dátumom.');
+            }
+        });
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
     }
 }
