@@ -12,44 +12,25 @@
             v-model="selectedTask.completed" v-on:input="detailChanged"
             true-value="1" false-value="0">
     </form>
-    <strong id="error">{{message}}</strong>
+    <strong id="error">{{selectedTask.error}}</strong>
 </template>
 
 <script>
-import { inject, unref, watch } from 'vue';
+import { inject } from 'vue';
 export default {
     setup: function() {
         const selectedTask = inject('selectedTask');
-        var timer = null;
-        return {selectedTask, timer};
-    },
-    data: function() {
-        return {
-            message: ''
-        }
+        return {selectedTask};
     },
     methods: {
-        syncBackend: function(vcomp) {
-            vcomp.timer = null;
-            if (vcomp.selectedTask.id)
-                axios.patch('/task/' + vcomp.selectedTask.id, vcomp.selectedTask)
-                .then((response) => Object.assign(vcomp.selectedTask, response.data.task))
-                .catch((error) => this.message = error.response.data.message);
-            else axios.post('/task/', vcomp.selectedTask)
-                .then((response) => Object.assign(vcomp.selectedTask, response.data.task))
-                .catch((error) => this.message = error.response.data.message);
-        },
         detailChanged: function() {
-            this.message = '';
-            this.selectedTask.unsaved = true;
-            if (this.timer)
-                clearTimeout(this.timer);
             if (this.$refs.fields.checkValidity())
-                this.timer = setTimeout(this.syncBackend, 2000, this);
-            else this.message = 'Polia vyznačené červenou sú povinné';
+            {
+                this.selectedTask.changed = Date.now();
+                this.selectedTask.error = '';
+            }
+            else this.selectedTask.error = 'Polia vyznačené červenou sú povinné';
         }
-    },
-    mounted() {
     }
 };
 </script>

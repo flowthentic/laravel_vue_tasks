@@ -36,7 +36,6 @@ class TaskController extends Controller
         $this->validateWrapper($request);
 
         $task = Task::create($request->all());
-        $task['unsaved'] = false;
 
         return response()->json([
            'task'    => $task,
@@ -73,7 +72,6 @@ class TaskController extends Controller
         $task->completed = request('completed');
 
         $task->save();
-        $task['unsaved'] = false;
 
         return response()->json([
            'task'    => $task,
