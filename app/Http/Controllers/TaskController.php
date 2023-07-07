@@ -103,7 +103,7 @@ class TaskController extends Controller
                 ->count();
             if ($matchingDueCount > 1) {
                 $validator->errors()
-                ->add('due', 'Už existuje viacero úloh s týmto dátumom.');
+                ->add('due', 'Už existuje viacero úkolov s týmto dátumom.');
             }
         });
 

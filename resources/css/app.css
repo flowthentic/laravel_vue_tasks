@@ -19,3 +19,7 @@ form * {
 form label {
     margin-top: 1em;
 }
+
+input:invalid {
+    border-color: red;
+}

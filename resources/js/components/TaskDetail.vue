@@ -12,7 +12,7 @@
             v-model="selectedTask.completed" v-on:input="detailChanged"
             true-value="1" false-value="0">
     </form>
-    <em id="error">{{message}}</em>
+    <strong id="error">{{message}}</strong>
 </template>
 
 <script>
@@ -34,10 +34,10 @@ export default {
             if (vcomp.selectedTask.id)
                 axios.patch('/task/' + vcomp.selectedTask.id, vcomp.selectedTask)
                 .then((response) => Object.assign(vcomp.selectedTask, response.data.task))
-                .catch(vcomp.logError);
+                .catch((error) => this.message = error.response.data.message);
             else axios.post('/task/', vcomp.selectedTask)
                 .then((response) => Object.assign(vcomp.selectedTask, response.data.task))
-                .catch(vcomp.logError);
+                .catch((error) => this.message = error.response.data.message);
         },
         detailChanged: function() {
             this.message = '';
@@ -46,16 +46,7 @@ export default {
                 clearTimeout(this.timer);
             if (this.$refs.fields.checkValidity())
                 this.timer = setTimeout(this.syncBackend, 2000, this);
-            else this.message = 'Form is invalid';
-        },
-        logError: function(error) {
-            this.errors = [];
-            if (error.response.data.errors.name) {
-                this.errors.push(error.response.data.errors.name[0]);
-            }
-            if (error.response.data.errors.description) {
-                this.errors.push(error.response.data.errors.description[0]);
-            }
+            else this.message = 'Polia vyznačené červenou sú povinné';
         }
     },
     mounted() {
