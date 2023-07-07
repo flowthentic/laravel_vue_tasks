@@ -1,12 +1,14 @@
 
 <template>
-    <h1>Moje úkoly</h1>
-    <em v-if="!tasks">Úkoly sa načítavajú</em>
-    <em v-else-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
-    <ol v-else>
-        <li v-for="task in tasks" :key="task.id" v-on:click="selectTask(task)">{{ task.name + (task.unsaved == true ? " *" : "") }}</li>
+    <header>
+        <h1>Moje úkoly</h1>
+        <em v-if="!tasks">Úkoly sa načítavajú</em>
+        <button v-else v-on:click="createTask">Nový úkol</button>
+        <em v-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
+    </header>
+    <ol v-if="tasks">
+        <li v-for="task in tasks" v-on:click="selectTask(task, this)">{{ task.name + (task.unsaved ? " *" : "") }}</li>
     </ol>
-    <button v-if="tasks" v-on:click="createTask">Nový úkol</button>
     <task-detail v-if="selectedTask"/>
 </template>
 

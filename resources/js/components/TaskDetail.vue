@@ -8,7 +8,9 @@
         <label>Termín</label>
         <input type="date" name="due" v-model="selectedTask.due" v-on:input="detailChanged" required>
         <label>Splnený</label>
-        <input type="checkbox" name="completed" v-model="selectedTask.completed" v-on:input="detailChanged">
+        <input type="checkbox" name="completed"
+            v-model="selectedTask.completed" v-on:input="detailChanged"
+            true-value="1" false-value="0">
     </form>
     <em id="error">{{message}}</em>
 </template>
