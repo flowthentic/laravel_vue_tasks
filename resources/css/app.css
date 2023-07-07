@@ -1,18 +1,21 @@
 #app > * {
     margin-left: 2em;
 }
-form {
-    display: inline-block;
-}
 ol {
     float: left;
     padding-left: 0;
 }
+li {
+    list-style-type: none;
+}
 
 
-input, label {
+form {
+    display: inline-block;
+}
+form * {
     display: block;
 }
-label {
+form label {
     margin-top: 1em;
 }

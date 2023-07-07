@@ -7,7 +7,11 @@
         <em v-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
     </header>
     <ol v-if="tasks">
-        <li v-for="task in tasks" v-on:click="selectTask(task, this)">{{ task.name + (task.unsaved ? " *" : "") }}</li>
+        <li v-for="(task, number) in tasks">
+            <input v-model="selectedTask" v-bind:value="task"
+                type="radio" name="task" v-bind:id="'task'+number">
+            <label v-bind:for="'task'+number">{{ task.name + (task.unsaved ? " *" : "") }}</label>
+        </li>
     </ol>
     <task-detail v-if="selectedTask"/>
 </template>
@@ -40,9 +44,6 @@ export default {
                 unsaved: true
             });
             this.selectedTask = this.tasks.at(-1);
-        },
-        selectTask: function(task) {
-            this.selectedTask = task;
         }
     },
     created: function() {
