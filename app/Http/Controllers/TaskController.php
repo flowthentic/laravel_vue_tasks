@@ -33,13 +33,15 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validateWrapper($request);
+        $task = $request->all();
+        $task['errors'] = $this->reportErrors($request);
 
-        $task = Task::create($request->all());
+        if (count($task['errors']) == 0)
+            $task = Task::create($task);
+        else $task['changed'] = true;
 
         return response()->json([
            'task'    => $task,
-           'message' => 'Successfully created'
        ], 200);
     }
 
@@ -64,18 +66,19 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        $this->validateWrapper($request);
+        $task->errors = $this->reportErrors($request);
 
         $task->name = request('name');
         $task->description = request('description');
         $task->due = request('due');
         $task->completed = request('completed');
 
-        $task->save();
+        if (count($task->errors) == 0)
+            $task->save();
+        else $task->changed = true;
 
         return response()->json([
            'task'    => $task,
-           'message' => 'Successfully updated'
        ], 200);
     }
 
@@ -87,26 +90,28 @@ class TaskController extends Controller
         //
     }
 
-    private function validateWrapper(Request $request)
+    private function reportErrors(Request $request)
     {
         $validator = Validator::make($request->all(), [
             // validation of required fields
             'name' => 'required',
             'due' => 'required',
+        ],[
+            'name.required' => 'Názov úkolu je vyžadovaný',
+            'due.required' => 'Termín úlohy je povinný',
         ])->after(function ($validator) {
             // then validate if there aren't already two due dates of this value
             $data = $validator->getData();
             $matchingDueCount = Task::where('due', $data['due'])
                 ->where('id', '<>', $data['id']) // ignore involved task
                 ->count();
-            if ($matchingDueCount > 1) {
-                $validator->errors()
-                ->add('due', 'Už existuje viacero úkolov s týmto dátumom.');
-            }
+            $validator->errors()->addif($matchingDueCount > 1,
+                'due', 'Už existuje viacero úkolov s týmto dátumom.');
         });
 
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
+        $messages = $validator->errors()->messages();
+        //extract strings from single element arrays
+        array_walk($messages, fn(&$message) => $message = $message[0]);
+        return $messages;
     }
 }

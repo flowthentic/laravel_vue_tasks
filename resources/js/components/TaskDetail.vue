@@ -11,8 +11,9 @@
         <input type="checkbox" name="completed"
             v-model="selectedTask.completed" v-on:input="detailChanged"
             true-value="1" false-value="0">
+
+        <strong v-for="error in selectedTask.errors" class="error">{{error}}</strong>
     </form>
-    <strong id="error">{{selectedTask.error}}</strong>
 </template>
 
 <script>
@@ -27,9 +28,9 @@ export default {
             if (this.$refs.fields.checkValidity())
             {
                 this.selectedTask.changed = Date.now();
-                this.selectedTask.error = '';
+                this.selectedTask.errors = null;
             }
-            else this.selectedTask.error = 'Polia vyznačené červenou sú povinné';
+            else this.selectedTask.errors = ['Polia vyznačené červenou sú povinné'];
         }
     }
 };

@@ -10,7 +10,9 @@
         <li v-for="(task, number) in tasks">
             <input v-model="selectedTask" v-bind:value="task"
                 type="radio" name="task" v-bind:id="'task'+number">
-            <label v-bind:for="'task'+number">{{ task.name + (task.changed ? " *" : "") }}</label>
+            <label v-bind:for="'task'+number">{{task.name}}</label>
+            <span v-bind:class="[task.errors != null ? 'invalid' : '']"
+                v-show="task.changed"> *</span>
         </li>
     </ol>
     <task-detail v-if="selectedTask"/>
@@ -30,6 +32,9 @@ export default {
             timerID: null
         }
     },
+    computed: {
+        console: () => console
+    },
     methods: {
         createTask: function() {
             this.tasks.push({
@@ -39,7 +44,7 @@ export default {
                 due: '',
                 completed: false,
                 changed: true,
-                error: false
+                errors: null
             });
             this.selectedTask = this.tasks.at(-1);
         },
@@ -47,21 +52,21 @@ export default {
             //loop through all tasks in the list
             for (let i = 0; i < list.length; i++)
             {
-                if (list[i].changed == false)
-                    continue; //not changed since last save
+                if (typeof list[i].changed == 'boolean')
+                    continue; //as it has not changed since last (un/)sucessful save
                 else if (Date.now() - list[i].changed < 1000)
-                    continue; //changed, but probably still typing
-                //else now we can proceed to actual save logic
+                    continue; //changed, but wait, user probably still typing
 
+                //else now we can proceed to actual saving
                 else if (list[i].id)
                     //patch tasks if already in the api
                     axios.patch('/task/' + list[i].id, list[i])
                     .then((response) => Object.assign(list[i], response.data.task))
-                    .catch((error) => list[i].error = error.response.data.message);
+                    .catch((error) => this.console.log(error));
                 else axios.post('/task/', list[i])
                     //else post new tasks
                     .then((response) => Object.assign(list[i], response.data.task))
-                    .catch((error) => list[i].error = error.response.data.message);
+                    .catch((error) => this.console.log(error));
             }
         },
     },
