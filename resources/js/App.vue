@@ -1,21 +1,23 @@
 
 <template>
-    <header>
-        <h1>Moje úkoly</h1>
-        <em v-if="!tasks">Úkoly sa načítavajú</em>
-        <button v-else v-on:click="createTask">Nový úkol</button>
-        <em v-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
-    </header>
-    <ol v-if="tasks">
-        <li v-for="(task, number) in tasks">
-            <input v-model="selectedTask" v-bind:value="task"
-                type="radio" name="task" v-bind:id="'task'+number">
-            <label v-bind:for="'task'+number">{{task.name}}</label>
-            <span v-bind:class="[task.errors != null ? 'invalid' : '']"
-                v-show="task.changed"> *</span>
-        </li>
-    </ol>
-    <task-detail v-if="selectedTask"/>
+    <h1>Moje úkoly</h1>
+    <em v-if="!tasks">Úkoly sa načítavajú</em>
+    <button v-else v-on:click="createTask">Nový úkol</button>
+    <em v-if="tasks.length == 0">Žiadne úkoly na zobrazenie</em>
+    <main>
+        <div class="scroll">
+            <ul v-if="tasks">
+                <li v-for="(task, number) in tasks">
+                    <input v-model="selectedTask" v-bind:value="task"
+                        type="radio" name="task" v-bind:id="'task'+number">
+                    <label v-bind:for="'task'+number">{{task.name}}</label>
+                    <span v-bind:class="[task.errors != null ? 'invalid' : '']"
+                        v-show="task.changed"> *</span>
+                </li>
+            </ul>
+        </div>
+        <task-detail v-if="selectedTask"/>
+    </main>
 </template>
 
 <script>
